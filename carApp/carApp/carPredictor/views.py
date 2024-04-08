@@ -11,3 +11,6 @@ def welcome(request):
 
 def carApp(request):
     return render(request, 'carApp.html')
+
+def oil_car(request):
+    return render(request, 'oil_car.html')

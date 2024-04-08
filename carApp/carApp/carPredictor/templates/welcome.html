@@ -3,16 +3,17 @@
 
 <head>
     <title>Welcome Page</title>
+    {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             background-color: #FFFACD;
             margin: 0;
             padding: 0;
+            background-image: url("{% static 'images/coche1.jpeg' %}");
+            background-repeat: no-repeat;
             background-size: cover;
-            background-position: center;
-            background-image: src="fotos_coche/coche1.jepg";
-            transition: background-image 2s ease-in-out;
+            transition: background-image 1s ease-in-out;
         }
 
         .centered {
@@ -34,42 +35,28 @@
 <body>
     <div class="container">
         <div class="centered">
-            <h1>¿Cuanto vale tu coche?</h1>
+            <h1 style="color: azure;">¿Cuanto vale tu coche?</h1>
             <button class="btn btn-primary" onclick="window.location.href='carApp'">Descubrelo</button>
-            <img src="templates/fotos_coches/coche1.jpeg" alt="Mi Imagen">
         </div>
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    
     <script>
-        const images = [
-            'fotos_coche/coche1.jepg',
-            'fotos_coche/coche2.jepg',
-            'fotos_coche/coche3.jepg',
-            'fotos_coche/coche4.jepg',
-            'fotos_coche/coche5.jepg',
-            'fotos_coche/coche6.jepg',
-            'fotos_coche/coche7.jepg',
-            'fotos_coche/coche8.jepg',
-            'fotos_coche/coche9.jepg',
-            'fotos_coche/coche10.jepg',
-            'fotos_coche/coche11.jepg',
-            'fotos_coche/coche12.jepg',
-            'fotos_coche/coche13.jepg'
-        ]
+        var images = [
+            "{% static 'images/coche1.jpeg' %}",
+            "{% static 'images/coche2.jpeg' %}",
+            "{% static 'images/coche3.jpeg' %}"
+        ];
+        var currentIndex = 0;
 
-        let index = 0;
-
-        // Función para cambiar la imagen de fondo
-        function changeBackground() {
-            index = (index + 1) % images.length;
-            document.body.style.backgroundImage = images[index];
+        function changeBackgroundImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            document.body.style.backgroundImage = "url('" + images[currentIndex] + "')";
         }
 
-        // Cambia la imagen de fondo cada 5 segundos
-        setInterval(changeBackground, 5000);
+        setInterval(changeBackgroundImage, 5000); // Change image every 5 seconds
     </script>
-
+    
 </body>
 
 </html>
