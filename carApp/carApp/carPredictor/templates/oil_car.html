@@ -10,20 +10,74 @@
     <h2>Car Oil Form</h2>
     <form>
         <div class="form-group">
-            <label for="carMake">Car Make:</label>
-            <input type="text" class="form-control" id="carMake" placeholder="Enter car make">
-        </div>
-        <div class="form-group">
-            <label for="carModel">Car Model:</label>
-            <input type="text" class="form-control" id="carModel" placeholder="Enter car model">
-        </div>
-        <div class="form-group">
-            <label for="oilType">Oil Type:</label>
-            <select class="form-control" id="oilType">
-                <option value="1">Regular</option> 
-                <option>Synthetic</option>
-                <option>High Mileage</option>
+            <label for="carMake">Marca:</label>
+            <select class="form-control" id="oilType" onchange="showModels(this)">
+                {% for marca in marcas %}
+                    <option value="{{ marca.0 }}">{{ marca.1 }}</option>
+                {% endfor %}
             </select>
+        </div>
+        <div class="form-group" style="display: none;" id="modelDiv">
+            <label for="carMake">Modelo:</label>
+            <select class="form-control" id="oilModel" onchange="showVersions(this)">
+                
+            </select>
+        </div>
+        <div class="form-group" style="display: none;" id="versionDiv">
+            <label for="carMake">Version:</label>
+            <select class="form-control" id="oilVersion">
+                
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="oilType">Combustible:</label>
+            <select class="form-control" id="oilType">
+                {% for com in combustible %}
+                    <option value="{{ com.0 }}">{{ com.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="caballos">Precio Venta:</label>
+            <input type="number" class="form-control" id="manufacturedprice" name="manufacturedprice" placeholder="Ingrese el precio de venta">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Kilometros:</label>
+            <input type="number" class="form-control" id="kilometros" name="kilometros" placeholder="Ingrese el número kilometros">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Año del Vehiculo:</label>
+            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Etiqueta Medio Ambiental:</label>
+            <select class="form-control" id="etiqueta_form">
+                    <option value="1">C</option>
+                    <option value="2">B</option>
+                    <option value="3">ECO</option>
+                    <option value="4">0</option>
+                    <option value="5">Sin Etiqueta</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="caballos">Provincia de venta</label>
+            <select class="form-control" id="provincia_form">
+                {% for prov in provincias %}
+                    <option value="{{ prov.0 }}">{{ prov.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="caballos">Año del Vehiculo:</label>
+            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Año del Vehiculo:</label>
+            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Año del Vehiculo:</label>
+            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -33,5 +87,77 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+    function showModels(selectedElement) {
+        var carMakeID = selectedElement.value;
+        var url = "/carPredictor/load_models/" + carMakeID + "/";
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                var modelDiv = document.getElementById("modelDiv");
+                modelDiv.style.display = "block";
+                var modelSelect = document.getElementById("oilModel");
+                modelSelect.innerHTML = "";
+                data.modelos.forEach(model => {
+                    var option = document.createElement("option");
+                    option.value = model[0];
+                    option.text = model[1];
+                    modelSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error loading models:", error));
+    }
+
+    function showVersions(selectedElement){
+        var carModelID = selectedElement.value;
+        var url = "/carPredictor/load_versions/" + carModelID + "/";
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                var modelDiv = document.getElementById("versionDiv");
+                modelDiv.style.display = "block";
+                var modelSelect = document.getElementById("oilVersion");
+                modelSelect.innerHTML = "";
+                data.versiones.forEach(model => {
+                    var option = document.createElement("option");
+                    option.value = model[0];
+                    option.text = model[1];
+                    modelSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error loading models:", error));
+    }
+</script>
+
 </body>
 </html>
+
+provinceid                       category
+horsepower                        float64
+maxspeed                          float64
+acceleration                      float64
+combustible_type_id              category
+body_type_id                     category
+transmision_type_id              category
+doors                             float64
+seatingcapacity                   float64
+colores_type_id                  category
+dimensionsinmillimeterswidth      float64
+dimensionsinmillimetersheight     float64
+dimensionsinmillimeterslength     float64
+weight                            float64
+tankcapacityinliters              float64
+trunkcapacityinliters             float64
+consumptionurban                  float64
+consumptionmixed                  float64
+consumptionextraurban             float64
+co2emissionsgramsperkm            float64
+batteryvoltage                    float64
+batterykwh                        float64
+chargingtime                      float64
+chargingtimefast                  float64
+lPrice                            float64
