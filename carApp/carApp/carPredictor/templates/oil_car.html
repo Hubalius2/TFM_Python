@@ -7,11 +7,16 @@
 <body>
 
 <div class="container">
-    <h2>Car Oil Form</h2>
-    <form>
+    <h2>Datos del Vehiculo</h2>
+    <form method="post" action="{% url 'predict' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="vehicleyear">Año del Vehiculo:</label>
+            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion" min="1972" max="2024" >
+        </div>
         <div class="form-group">
             <label for="carMake">Marca:</label>
-            <select class="form-control" id="oilType" onchange="showModels(this)">
+            <select class="form-control" id="make" name="make" onchange="showModels(this, document.getElementById('vehicleyear').value)">
                 {% for marca in marcas %}
                     <option value="{{ marca.0 }}">{{ marca.1 }}</option>
                 {% endfor %}
@@ -19,39 +24,36 @@
         </div>
         <div class="form-group" style="display: none;" id="modelDiv">
             <label for="carMake">Modelo:</label>
-            <select class="form-control" id="oilModel" onchange="showVersions(this)">
+            <select class="form-control" id="model" name="model" onchange="showVersions(this, document.getElementById('make').value, document.getElementById('vehicleyear').value)">
                 
             </select>
         </div>
+        
         <div class="form-group" style="display: none;" id="versionDiv">
             <label for="carMake">Version:</label>
-            <select class="form-control" id="oilVersion">
+            <select class="form-control" id="version" name="version">
                 
             </select>
         </div>
-        <div class="form-group">
+        <!--<div class="form-group">
             <label for="oilType">Combustible:</label>
-            <select class="form-control" id="oilType">
+            <select class="form-control" id="oilType" name="oilType">
                 {% for com in combustible %}
                     <option value="{{ com.0 }}">{{ com.1 }}</option>
                 {% endfor %}
             </select>
-        </div>
+        </div> 
         <div class="form-group">
             <label for="caballos">Precio Venta:</label>
             <input type="number" class="form-control" id="manufacturedprice" name="manufacturedprice" placeholder="Ingrese el precio de venta">
-        </div>
+        </div> -->
         <div class="form-group">
             <label for="caballos">Kilometros:</label>
             <input type="number" class="form-control" id="kilometros" name="kilometros" placeholder="Ingrese el número kilometros">
         </div>
-        <div class="form-group">
-            <label for="caballos">Año del Vehiculo:</label>
-            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
-        </div>
-        <div class="form-group">
+        <!--<div class="form-group">
             <label for="caballos">Etiqueta Medio Ambiental:</label>
-            <select class="form-control" id="etiqueta_form">
+            <select class="form-control" id="etiqueta_form" name="etiqueta_form">
                     <option value="1">C</option>
                     <option value="2">B</option>
                     <option value="3">ECO</option>
@@ -60,24 +62,24 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="caballos">Caballos</label>
+            <input type="number" class="form-control" id="horsepower" name="horsepower" placeholder="Caballos del Vehiculo">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Peso</label>
+            <input type="number" class="form-control" id="weight" name="weight" placeholder="Peso del Vehiculo">
+        </div>
+        <div class="form-group">
+            <label for="caballos">Numero de Puertas</label>
+            <input type="number" class="form-control" id="doors" name="doors" placeholder="Numero de Puertas">
+        </div> -->
+        <div class="form-group">
             <label for="caballos">Provincia de venta</label>
-            <select class="form-control" id="provincia_form">
+            <select class="form-control" id="provincia_form" name="provincia_form">
                 {% for prov in provincias %}
                     <option value="{{ prov.0 }}">{{ prov.1 }}</option>
                 {% endfor %}
             </select>
-        </div>
-        <div class="form-group">
-            <label for="caballos">Año del Vehiculo:</label>
-            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
-        </div>
-        <div class="form-group">
-            <label for="caballos">Año del Vehiculo:</label>
-            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
-        </div>
-        <div class="form-group">
-            <label for="caballos">Año del Vehiculo:</label>
-            <input type="number" class="form-control" id="vehicleyear" name="vehicleyear" placeholder="Ingrese el año de fabricacion">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -88,9 +90,10 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    function showModels(selectedElement) {
+    function showModels(selectedElement, selectedYear) {
         var carMakeID = selectedElement.value;
-        var url = "/carPredictor/load_models/" + carMakeID + "/";
+        var carYear = selectedYear;
+        var url = "/carPredictor/load_models/" + carMakeID + "/" + carYear + "/";
 
         fetch(url)
             .then(response => response.json())
@@ -98,7 +101,7 @@
                 console.log(data);
                 var modelDiv = document.getElementById("modelDiv");
                 modelDiv.style.display = "block";
-                var modelSelect = document.getElementById("oilModel");
+                var modelSelect = document.getElementById("model");
                 modelSelect.innerHTML = "";
                 data.modelos.forEach(model => {
                     var option = document.createElement("option");
@@ -110,9 +113,11 @@
             .catch(error => console.error("Error loading models:", error));
     }
 
-    function showVersions(selectedElement){
-        var carModelID = selectedElement.value;
-        var url = "/carPredictor/load_versions/" + carModelID + "/";
+    function showVersions(selectedModel, selectedMake, selectedYear){
+        var carModelID = selectedModel.value;
+        var carMakeID = selectedMake;
+        var carYear = selectedYear;
+        var url = "/carPredictor/load_versions/" + carModelID + "/" + carMakeID + "/" + carYear + "/";
 
         fetch(url)
             .then(response => response.json())
@@ -120,7 +125,7 @@
                 console.log(data);
                 var modelDiv = document.getElementById("versionDiv");
                 modelDiv.style.display = "block";
-                var modelSelect = document.getElementById("oilVersion");
+                var modelSelect = document.getElementById("version");
                 modelSelect.innerHTML = "";
                 data.versiones.forEach(model => {
                     var option = document.createElement("option");
@@ -136,28 +141,4 @@
 </body>
 </html>
 
-provinceid                       category
-horsepower                        float64
-maxspeed                          float64
-acceleration                      float64
-combustible_type_id              category
-body_type_id                     category
-transmision_type_id              category
-doors                             float64
-seatingcapacity                   float64
-colores_type_id                  category
-dimensionsinmillimeterswidth      float64
-dimensionsinmillimetersheight     float64
-dimensionsinmillimeterslength     float64
-weight                            float64
-tankcapacityinliters              float64
-trunkcapacityinliters             float64
-consumptionurban                  float64
-consumptionmixed                  float64
-consumptionextraurban             float64
-co2emissionsgramsperkm            float64
-batteryvoltage                    float64
-batterykwh                        float64
-chargingtime                      float64
-chargingtimefast                  float64
-lPrice                            float64
+
